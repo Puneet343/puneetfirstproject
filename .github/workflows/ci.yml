@@ -1,20 +1,32 @@
-name: Puneet First Project CI
+name: Puneet First Project CI/CD
 
 on:
   push:
     branches: [ main ]
-  pull_request:
-    branches: [ main ]
 
 jobs:
-  build-and-test:
+  build-test-deploy:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v3
+      # 1️⃣ Code checkout
+      - name: Checkout repository
+        uses: actions/checkout@v3
 
-    - name: Run simple test
-      run: |
-        echo "Repository files:"
-        ls -la
+      # 2️⃣ Simple test
+      - name: List files
+        run: |
+          echo "Files in repo:"
+          ls -la
+
+      # 3️⃣ Deploy to server
+      - name: Deploy to server
+        uses: appleboy/ssh-action@v0.1.6
+        with:
+          host: ${{ secrets.SERVER_IP }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SERVER_SSH_KEY }}
+          script: |
+            cd /puneetfirstproject
+            git pull origin main
+            echo "Deployment done!"
